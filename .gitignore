@@ -1,0 +1,58 @@
+# Binarios
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+webapp
+webapp-*
+
+# Archivos de test
+*.test
+*.out
+
+# Dependencias
+vendor/
+
+# Archivos de configuración sensibles
+.env
+*.env
+!config.example.env
+config.local.env
+
+# Logs
+*.log
+logs/
+
+# Base de datos
+*.db
+*.sqlite
+*.sql.gz
+mysql_data/
+
+# Docker volumes
+mysql_data/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go workspace file
+go.work
+
+# Certificados y claves
+*.pem
+*.key
+*.crt
+*.p12
+
+# Backups
+*.bak
+*.backup

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - WebApp Go</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>🔐 Inicio de Sesión</h1>
+            <p class="subtitle">Aplicación Web en Go</p>
+            
+            {{if .Error}}
+            <div class="error-message">
+                ⚠️ {{.Error}}
+            </div>
+            {{end}}
+            
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Ingresar</button>
+            </form>
+
+            <div class="register-link">
+                <p>¿No tienes una cuenta? <a href="/register" class="register-btn">Crear cuenta nueva</a></p>
+            </div>
+            
+            <div class="info-box">
+                <h3>👤 Usuarios de prueba:</h3>
+                <ul>
+                    <li><strong>admin</strong> / admin123</li>
+                    <li><strong>usuario1</strong> / pass123</li>
+                    <li><strong>demo</strong> / demo123</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

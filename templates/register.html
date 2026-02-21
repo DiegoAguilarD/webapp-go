@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - WebApp Go</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h1>📝 Crear Nueva Cuenta</h1>
+            <p class="subtitle">Sistema Multi-tenant - Tendrás tu propia base de datos</p>
+            
+            {{if .Error}}
+            <div class="error-message">
+                ⚠️ {{.Error}}
+            </div>
+            {{end}}
+
+            {{if .Success}}
+            <div class="success-message">
+                ✅ {{.Success}}
+            </div>
+            {{end}}
+            
+            <form action="/register" method="POST">
+                <div class="form-group">
+                    <label for="username">👤 Nombre de Usuario</label>
+                    <input type="text" id="username" name="username" required autofocus 
+                           pattern="[a-zA-Z0-9_]{3,20}" 
+                           title="3-20 caracteres, solo letras, números y guion bajo"
+                           placeholder="Ej: juan_perez">
+                    <small>Solo letras, números y guion bajo (3-20 caracteres)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">🔒 Contraseña</label>
+                    <input type="password" id="password" name="password" required 
+                           minlength="6"
+                           placeholder="Mínimo 6 caracteres">
+                    <small>Mínimo 6 caracteres</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">🔒 Confirmar Contraseña</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required 
+                           minlength="6"
+                           placeholder="Repite tu contraseña">
+                </div>
+                
+                <button type="submit" class="btn-primary">Crear Cuenta</button>
+            </form>
+
+            <div class="register-link">
+                <p>¿Ya tienes una cuenta? <a href="/">Inicia Sesión</a></p>
+            </div>
+            
+            <div class="info-box">
+                <h3>ℹ️ Información importante:</h3>
+                <ul>
+                    <li>Se creará una base de datos exclusiva para ti</li>
+                    <li>Tus datos estarán totalmente aislados</li>
+                    <li>El proceso puede tomar unos segundos</li>
+                    <li>Elige un nombre de usuario único</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Validar que las contraseñas coincidan
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Las contraseñas no coinciden');
+            }
+        });
+    </script>
+</body>
+</html>

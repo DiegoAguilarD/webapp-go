@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - WebApp Go</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-content">
+            <h2>📊 Dashboard</h2>
+            <div class="nav-right">
+                <span class="user-info">👤 {{.Username}}</span>
+                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1>¡Bienvenido, {{.Username}}!</h1>
+            <p class="time">🕐 {{.Time}}</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">{{.Stats.Usuarios}}</div>
+                <div class="stat-label">Usuarios Registrados</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🔗</div>
+                <div class="stat-value">{{.Stats.Sesiones}}</div>
+                <div class="stat-label">Sesiones Activas</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-value">{{.Stats.Visitantes}}</div>
+                <div class="stat-label">Acciones Registradas</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔐</div>
+                <div class="stat-value">{{.Stats.LoginCount}}</div>
+                <div class="stat-label">Total de Logins</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <div class="card">
+                <h2>📋 Actividad Reciente</h2>
+                <ul class="activity-list">
+                    {{range .Activities}}
+                    <li>✓ {{.}}</li>
+                    {{end}}
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>ℹ️ Información del Sistema</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Servidor:</strong>
+                        <span>Go Web Server</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Estado:</strong>
+                        <span class="status-online">🟢 En línea</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Puerto:</strong>
+                        <span>8080</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Versión:</strong>
+                        <span>1.0.0</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Base de Datos:</strong>
+                        <span>🗄️ {{.Database}}</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Arquitectura:</strong>
+                        <span>Multi-tenant (BD por usuario)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            <p>Esta es una aplicación web de demostración creada en Go para propósitos de despliegue y pruebas.</p>
+        </div>
+    </div>
+</body>
+</html>

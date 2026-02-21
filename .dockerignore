@@ -1,0 +1,24 @@
+# Binarios
+*.exe
+webapp
+webapp-*
+
+# IDEs
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Documentación (opcional)
+README.md
+DESPLIEGUE.md
+
+# Go
+*.test
+*.out

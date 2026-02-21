@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Exitoso - Tu Enlace de Acceso</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .success-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .success-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .success-title {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .success-subtitle {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .access-url-box {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            word-break: break-all;
+        }
+        
+        .access-url-label {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 14px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .access-url {
+            font-size: 18px;
+            color: #333;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-copy {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-copy:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-access {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px 5px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-access:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .info-section {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .info-section h3 {
+            color: #856404;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-section ul {
+            color: #856404;
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .info-section li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        
+        .username-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .copied-message {
+            display: none;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-box">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">¡Registro Exitoso!</h1>
+            <p class="success-subtitle">
+                Tu cuenta ha sido creada exitosamente<br>
+                Usuario: <span class="username-display">{{.Username}}</span>
+            </p>
+            
+            <div class="access-url-box">
+                <div class="access-url-label">🔗 Tu Enlace de Acceso Único</div>
+                <div class="access-url" id="accessUrl">{{.AccessURL}}</div>
+            </div>
+            
+            <button class="btn-copy" onclick="copyToClipboard()">
+                📋 Copiar Enlace
+            </button>
+            <a href="{{.AccessURL}}" class="btn-access">
+                🚀 Acceder Ahora
+            </a>
+            
+            <div id="copiedMessage" class="copied-message">
+                ✓ ¡Enlace copiado al portapapeles!
+            </div>
+            
+            <div class="info-section">
+                <h3>📌 Información Importante</h3>
+                <ul>
+                    <li><strong>Guarda este enlace:</strong> Este es tu acceso personal y único a tu instancia del programa</li>
+                    <li><strong>Base de datos exclusiva:</strong> Tienes tu propia base de datos aislada de otros usuarios</li>
+                    <li><strong>Acceso directo:</strong> Usa este enlace para acceder sin necesidad de iniciar sesión manualmente</li>
+                    <li><strong>Seguridad:</strong> No compartas este enlace con nadie, es personal e intransferible</li>
+                    <li><strong>Marcador:</strong> Te recomendamos guardar este enlace en tus favoritos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const urlText = document.getElementById('accessUrl').textContent;
+            
+            // Crear elemento temporal para copiar
+            const tempInput = document.createElement('input');
+            tempInput.value = urlText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                // Mostrar mensaje de confirmación
+                const message = document.getElementById('copiedMessage');
+                message.style.display = 'block';
+                
+                // Ocultar mensaje después de 3 segundos
+                setTimeout(() => {
+                    message.style.display = 'none';
+                }, 3000);
+            } catch (err) {
+                console.error('Error al copiar:', err);
+                alert('No se pudo copiar el enlace. Por favor, cópialo manualmente.');
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+        
+        // También intentar usar la API moderna del portapapeles si está disponible
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            function copyToClipboard() {
+                const urlText = document.getElementById('accessUrl').textContent;
+                
+                navigator.clipboard.writeText(urlText).then(() => {
+                    const message = document.getElementById('copiedMessage');
+                    message.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 3000);
+                }).catch(err => {
+                    console.error('Error al copiar:', err);
+                    alert('No se pudo copiar el enlace. Por favor, cópialo manualmente.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
