@@ -51,18 +51,34 @@
     # ------------------------------------------------------------------
     # 3. Crear la base de datos y el usuario en MariaDB compartido
     # ------------------------------------------------------------------
-    - name: Crear base de datos y usuario del cliente en MariaDB
+    - name: Crear script SQL para el nuevo cliente
+      ansible.builtin.copy:
+        content: |
+          CREATE DATABASE IF NOT EXISTS `{{ db_name }}`
+            CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+          CREATE USER IF NOT EXISTS '{{ db_user }}'@'%'
+            IDENTIFIED BY '{{ db_password }}';
+          GRANT ALL PRIVILEGES ON `{{ db_name }}`.* TO '{{ db_user }}'@'%';
+          FLUSH PRIVILEGES;
+        dest: "/tmp/setup_{{ client_slug }}.sql"
+        mode: "0600"
+      tags: [database]
+
+    - name: Copiar script SQL al contenedor de MariaDB
+      ansible.builtin.command:
+        cmd: "docker cp /tmp/setup_{{ client_slug }}.sql {{ mariadb_container }}:/tmp/setup.sql"
+      tags: [database]
+
+    - name: Ejecutar script SQL en MariaDB
       community.docker.docker_container_exec:
         container: "{{ mariadb_container }}"
-        command: >
-          mysql -uroot -p{{ mariadb_root_password }} -e "
-            CREATE DATABASE IF NOT EXISTS \`{{ db_name }}\`
-              CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-            CREATE USER IF NOT EXISTS '{{ db_user }}'@'%'
-              IDENTIFIED BY '{{ db_password }}';
-            GRANT ALL PRIVILEGES ON \`{{ db_name }}\`.* TO '{{ db_user }}'@'%';
-            FLUSH PRIVILEGES;
-          "
+        command: sh -c "mysql -uroot -p\"${MYSQL_ROOT_PASSWORD}\" < /tmp/setup.sql && rm -f /tmp/setup.sql"
+      tags: [database]
+
+    - name: Eliminar script SQL temporal del host
+      ansible.builtin.file:
+        path: "/tmp/setup_{{ client_slug }}.sql"
+        state: absent
       tags: [database]
 
     # ------------------------------------------------------------------
@@ -94,8 +110,12 @@
     # 5. Ejecutar migraciones de base de datos
     # ------------------------------------------------------------------
     - name: Esperar a que el contenedor del cliente esté listo
-      ansible.builtin.pause:
-        seconds: 5
+      community.docker.docker_container_info:
+        name: "{{ container_name }}"
+      register: container_info
+      until: container_info.container.State.Running | default(false)
+      retries: 10
+      delay: 3
 
     - name: Ejecutar migraciones de la base de datos
       community.docker.docker_container_exec:

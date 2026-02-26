@@ -11,6 +11,8 @@ services:
     container_name: saas_mariadb
     restart: unless-stopped
     environment:
+      # IMPORTANTE: Cambiar esta contraseña antes de usar en producción.
+      # Para entornos locales/desarrollo se usa el valor por defecto.
       MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-rootpassword}
     ports:
       - "3306:3306"
