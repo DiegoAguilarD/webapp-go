@@ -1,0 +1,127 @@
+---
+# Playbook de Ansible para desplegar un nuevo cliente en la plataforma SaaS
+# multi-tenant. Se ejecuta localmente y orquesta:
+#   1. Construcción de la imagen Docker de la aplicación Go
+#   2. Creación de base de datos y usuario en el MariaDB compartido
+#   3. Despliegue del contenedor del cliente
+#   4. Ejecución de migraciones de base de datos
+#
+# Variables requeridas (pasadas desde Jenkins):
+#   - client_name:    Nombre descriptivo del cliente
+#   - client_slug:    Identificador único (letras minúsculas, números, guiones bajos)
+#   - admin_email:    Correo del administrador del cliente
+#   - admin_password: Contraseña del administrador del cliente
+#   - client_port:    Puerto externo asignado al contenedor
+
+- name: Desplegar nuevo cliente SaaS
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+
+  vars:
+    docker_image: "webapp-go:latest"
+    docker_network: "saas-network"
+    mariadb_container: "saas_mariadb"
+    mariadb_root_password: "{{ lookup('env', 'MARIADB_ROOT_PASSWORD') | default('rootpassword', true) }}"
+    db_name: "db_{{ client_slug }}"
+    db_user: "user_{{ client_slug }}"
+    container_name: "saas_client_{{ client_slug }}"
+
+  tasks:
+    # ------------------------------------------------------------------
+    # 1. Construir la imagen Docker de la aplicación Go
+    # ------------------------------------------------------------------
+    - name: Construir imagen Docker de la aplicación
+      community.docker.docker_image:
+        name: "{{ docker_image }}"
+        source: build
+        build:
+          path: "{{ playbook_dir }}/.."
+          dockerfile: Dockerfile
+        force_source: true
+      tags: [build]
+
+    # ------------------------------------------------------------------
+    # 2. Generar contraseña aleatoria para la base de datos del cliente
+    # ------------------------------------------------------------------
+    - name: Generar contraseña aleatoria para la BD del cliente
+      ansible.builtin.set_fact:
+        db_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_letters,digits') }}"
+
+    # ------------------------------------------------------------------
+    # 3. Crear la base de datos y el usuario en MariaDB compartido
+    # ------------------------------------------------------------------
+    - name: Crear base de datos y usuario del cliente en MariaDB
+      community.docker.docker_container_exec:
+        container: "{{ mariadb_container }}"
+        command: >
+          mysql -uroot -p{{ mariadb_root_password }} -e "
+            CREATE DATABASE IF NOT EXISTS \`{{ db_name }}\`
+              CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            CREATE USER IF NOT EXISTS '{{ db_user }}'@'%'
+              IDENTIFIED BY '{{ db_password }}';
+            GRANT ALL PRIVILEGES ON \`{{ db_name }}\`.* TO '{{ db_user }}'@'%';
+            FLUSH PRIVILEGES;
+          "
+      tags: [database]
+
+    # ------------------------------------------------------------------
+    # 4. Desplegar el contenedor del cliente
+    # ------------------------------------------------------------------
+    - name: Desplegar contenedor del cliente
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        state: started
+        restart_policy: unless-stopped
+        networks:
+          - name: "{{ docker_network }}"
+        ports:
+          - "{{ client_port }}:8080"
+        env:
+          CLIENT_NAME: "{{ client_name }}"
+          CLIENT_SLUG: "{{ client_slug }}"
+          ADMIN_EMAIL: "{{ admin_email }}"
+          ADMIN_PASSWORD: "{{ admin_password }}"
+          DB_HOST: "{{ mariadb_container }}"
+          DB_PORT: "3306"
+          DB_NAME: "{{ db_name }}"
+          DB_USER: "{{ db_user }}"
+          DB_PASSWORD: "{{ db_password }}"
+      tags: [deploy]
+
+    # ------------------------------------------------------------------
+    # 5. Ejecutar migraciones de base de datos
+    # ------------------------------------------------------------------
+    - name: Esperar a que el contenedor del cliente esté listo
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Ejecutar migraciones de la base de datos
+      community.docker.docker_container_exec:
+        container: "{{ container_name }}"
+        command: /app/webapp -migrate
+      register: migration_result
+      tags: [migrate]
+
+    - name: Mostrar resultado de las migraciones
+      ansible.builtin.debug:
+        msg: "{{ migration_result.stdout }}"
+      when: migration_result.stdout is defined
+      tags: [migrate]
+
+    # ------------------------------------------------------------------
+    # Resumen del despliegue
+    # ------------------------------------------------------------------
+    - name: Resumen del despliegue
+      ansible.builtin.debug:
+        msg: |
+          =========================================
+          Cliente desplegado exitosamente
+          Nombre:      {{ client_name }}
+          Slug:        {{ client_slug }}
+          Contenedor:  {{ container_name }}
+          Puerto:      {{ client_port }}
+          Base de datos: {{ db_name }}
+          URL:         http://127.0.0.1:{{ client_port }}
+          =========================================
