@@ -3,7 +3,7 @@
 # multi-tenant. Se ejecuta en la instancia de Google Cloud (34.46.129.60)
 # y orquesta:
 #   1. Construcción de la imagen Docker de la aplicación Go
-#   2. Creación de base de datos y usuario en el MariaDB compartido
+#   2. Creación de base de datos en el MariaDB compartido
 #   3. Despliegue del contenedor del cliente
 #   4. Ejecución de migraciones de base de datos
 #
@@ -25,7 +25,6 @@
     mariadb_container: "webapp_mysql"
     mariadb_root_password: "{{ lookup('env', 'MARIADB_ROOT_PASSWORD') | default('password', true) }}"
     db_name: "db_{{ client_slug }}"
-    db_user: "user_{{ client_slug }}"
     container_name: "saas_client_{{ client_slug }}"
     admin_email: "admin"
     admin_password: "12345678"
@@ -45,24 +44,13 @@
       tags: [build]
 
     # ------------------------------------------------------------------
-    # 2. Generar contraseña aleatoria para la base de datos del cliente
-    # ------------------------------------------------------------------
-    - name: Generar contraseña aleatoria para la BD del cliente
-      ansible.builtin.set_fact:
-        db_password: "{{ lookup('password', '/dev/null length=24 chars=ascii_letters,digits') }}"
-
-    # ------------------------------------------------------------------
-    # 3. Crear la base de datos y el usuario en MariaDB compartido
+    # 2. Crear la base de datos en MariaDB compartido
     # ------------------------------------------------------------------
     - name: Crear script SQL para el nuevo cliente
       ansible.builtin.copy:
         content: |
           CREATE DATABASE IF NOT EXISTS `{{ db_name }}`
             CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-          CREATE USER IF NOT EXISTS '{{ db_user }}'@'%'
-            IDENTIFIED BY '{{ db_password }}';
-          GRANT ALL PRIVILEGES ON `{{ db_name }}`.* TO '{{ db_user }}'@'%';
-          FLUSH PRIVILEGES;
         dest: "/tmp/setup_{{ client_slug }}.sql"
         mode: "0600"
       tags: [database]
@@ -85,7 +73,7 @@
       tags: [database]
 
     # ------------------------------------------------------------------
-    # 4. Desplegar el contenedor del cliente
+    # 3. Desplegar el contenedor del cliente
     # ------------------------------------------------------------------
     - name: Desplegar contenedor del cliente
       community.docker.docker_container:
@@ -107,12 +95,10 @@
           DB_ROOT_USER: "root"
           DB_ROOT_PASSWORD: "{{ mariadb_root_password }}"
           DB_NAME: "{{ db_name }}"
-          DB_USER: "{{ db_user }}"
-          DB_PASSWORD: "{{ db_password }}"
       tags: [deploy]
 
     # ------------------------------------------------------------------
-    # 5. Ejecutar migraciones de base de datos
+    # 4. Ejecutar migraciones de base de datos
     # ------------------------------------------------------------------
     - name: Esperar a que el contenedor del cliente esté listo
       community.docker.docker_container_info:

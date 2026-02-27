@@ -42,13 +42,13 @@ pipeline {
             steps {
                 script {
                     // Busca el próximo puerto libre a partir de 9000 verificando
-                    // los contenedores Docker activos en la instancia remota.
+                    // los contenedores Docker activos en la instancia remota de Google Cloud.
                     env.CLIENT_PORT = sh(
                         returnStdout: true,
                         script: '''#!/bin/sh
                             PORT=9000
-                            # Obtener puertos en uso por contenedores (formato: 0.0.0.0:XXXX->YYYY/tcp)
-                            USED_PORTS=$(docker ps --format '{{.Ports}}' | grep -o '0.0.0.0:[0-9]*' | cut -d: -f2 | sort -n | uniq)
+                            # Obtener puertos en uso por contenedores en la máquina remota
+                            USED_PORTS=$(ssh -o StrictHostKeyChecking=no -i ~/.ssh/gce_deploy_key ddarck99@34.46.129.60 "docker ps --format '{{.Ports}}'" | grep -o '0.0.0.0:[0-9]*' | cut -d: -f2 | sort -n | uniq)
                             
                             while true; do
                                 # Verificar si el puerto está en uso
