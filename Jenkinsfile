@@ -39,7 +39,8 @@ pipeline {
                     if (!params.ADMIN_EMAIL?.trim()) {
                         error('ADMIN_EMAIL es obligatorio.')
                     }
-                    if (!params.ADMIN_PASSWORD?.trim()) {
+                    // Para password parameters, no usar .trim() porque es un objeto Secret
+                    if (!params.ADMIN_PASSWORD) {
                         error('ADMIN_PASSWORD es obligatorio.')
                     }
                     
