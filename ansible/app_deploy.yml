@@ -119,18 +119,8 @@
       retries: 10
       delay: 3
 
-    - name: Ejecutar migraciones de la base de datos
-      community.docker.docker_container_exec:
-        container: "{{ container_name }}"
-        command: /app/webapp -migrate
-      register: migration_result
-      tags: [migrate]
-
-    - name: Mostrar resultado de las migraciones
-      ansible.builtin.debug:
-        msg: "{{ migration_result.stdout }}"
-      when: migration_result.stdout is defined
-      tags: [migrate]
+    # Las migraciones se ejecutan automáticamente al iniciar el contenedor
+    # porque la aplicación Go inicializa las bases de datos en su función init()
 
     # ------------------------------------------------------------------
     # Resumen del despliegue
