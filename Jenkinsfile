@@ -53,28 +53,28 @@ pipeline {
             steps {
                 script {
                     // Busca el próximo puerto libre a partir de 9000 verificando
-                    // los contenedores Docker activos en la máquina local.
+                    // los contenedores Docker activos.
                     env.CLIENT_PORT = sh(
                         returnStdout: true,
-                        script: '''#!/bin/bash
-                            set -e
+                        script: '''#!/bin/sh
                             PORT=9000
-                            # Obtener puertos host en uso por contenedores Docker activos
-                            DOCKER_PORTS=$(docker ps --format '{{.Ports}}' | \
-                                grep -oP '0\\.0\\.0\\.0:\\K[0-9]+' | sort -n | uniq)
+                            # Obtener puertos en uso por contenedores (formato: 0.0.0.0:XXXX->YYYY/tcp)
+                            USED_PORTS=$(docker ps --format '{{.Ports}}' | grep -o '0.0.0.0:[0-9]*' | cut -d: -f2 | sort -n | uniq)
+                            
                             while true; do
-                                # Verificar que no lo use un contenedor Docker
-                                if echo "$DOCKER_PORTS" | grep -qw "$PORT"; then
+                                # Verificar si el puerto está en uso
+                                if echo "$USED_PORTS" | grep -q "^${PORT}$"; then
                                     PORT=$((PORT + 1))
-                                    continue
+                                else
+                                    echo "$PORT"
+                                    break
                                 fi
-                                # Verificar que no lo use otro proceso en el host
-                                if ss -tlnH "sport = :$PORT" 2>/dev/null | grep -q .; then
-                                    PORT=$((PORT + 1))
-                                    continue
+                                
+                                # Evitar bucle infinito
+                                if [ $PORT -gt 9100 ]; then
+                                    echo "9000"
+                                    break
                                 fi
-                                echo "$PORT"
-                                exit 0
                             done
                         '''
                     ).trim()
