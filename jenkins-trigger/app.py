@@ -4,10 +4,10 @@ from flask import Flask, render_template, redirect, url_for
 app = Flask(__name__)
 
 # ── Hardcoded Jenkins configuration ──────────────────────────────────
-JENKINS_URL = "http://localhost:8080"
-JENKINS_JOB = "webapp-go"
-JENKINS_USER = "admin"
-JENKINS_TOKEN = "CHANGE_ME"
+JENKINS_URL = "http://localhost:8081"
+JENKINS_JOB = "webapp-go-deploy"
+JENKINS_USER = "DiegoA"
+JENKINS_TOKEN = "115fbdc6564aa974a64a0b93145b767db6"
 
 # ── Hardcoded pipeline parameters ────────────────────────────────────
 PIPELINE_PARAMS = {
