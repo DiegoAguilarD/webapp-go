@@ -47,8 +47,8 @@ pipeline {
                         returnStdout: true,
                         script: '''#!/bin/sh
                             PORT=9000
-                            # Obtener puertos en uso por contenedores en la máquina remota
-                            USED_PORTS=$(ssh -o StrictHostKeyChecking=no -i ~/.ssh/gce_deploy_key ddarck99@34.46.129.60 "docker ps --format '{{.Ports}}'" | grep -o '0.0.0.0:[0-9]*' | cut -d: -f2 | sort -n | uniq)
+                            # Obtener puertos en uso por contenedores en la instancia GCP
+                            USED_PORTS=$(ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ddarck99@34.46.129.60 "docker ps --format '{{.Ports}}'" | grep -o '0.0.0.0:[0-9]*' | cut -d: -f2 | sort -n | uniq)
                             
                             while true; do
                                 # Verificar si el puerto está en uso
