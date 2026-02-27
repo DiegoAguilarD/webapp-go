@@ -101,6 +101,8 @@
           ADMIN_PASSWORD: "{{ admin_password }}"
           DB_HOST: "{{ mariadb_container }}"
           DB_PORT: "3306"
+          DB_ROOT_USER: "root"
+          DB_ROOT_PASSWORD: "{{ mariadb_root_password }}"
           DB_NAME: "{{ db_name }}"
           DB_USER: "{{ db_user }}"
           DB_PASSWORD: "{{ db_password }}"
