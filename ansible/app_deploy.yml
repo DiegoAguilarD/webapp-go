@@ -17,8 +17,9 @@
 - name: Desplegar nuevo cliente SaaS
   hosts: gce
   gather_facts: false
-
+  
   vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     docker_image: "webapp-go:latest"
     docker_network: "webapp-go_webapp-network"
     mariadb_container: "webapp_mysql"
