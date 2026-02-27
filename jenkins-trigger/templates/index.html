@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Jenkins Pipeline Trigger</title>
+</head>
+<body>
+    <h1>Ejecutar Pipeline de Jenkins</h1>
+
+    <h3>Par&aacute;metros (hardcoded)</h3>
+    <table border="1" cellpadding="6">
+        <tr><th>Par&aacute;metro</th><th>Valor</th></tr>
+        {% for key, value in params.items() %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{% if key == "ADMIN_PASSWORD" %}******{% else %}{{ value }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <form method="post" action="{{ url_for('trigger') }}">
+        <button type="submit">Ejecutar Pipeline</button>
+    </form>
+
+    {% if result %}
+    <br>
+    {% if result.ok %}
+    <p style="color:green;">{{ result.msg }}</p>
+    {% else %}
+    <p style="color:red;">{{ result.msg }}</p>
+    {% endif %}
+    {% endif %}
+</body>
+</html>
