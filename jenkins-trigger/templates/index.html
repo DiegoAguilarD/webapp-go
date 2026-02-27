@@ -181,7 +181,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="icon">&#9729;&#65039;</div>
+            <div class="icon" aria-label="Icono de despliegue en la nube">&#9729;&#65039;</div>
             <h1>Panel de Despliegue</h1>
             <p>Despliega nuevos clientes en la instancia de Google Cloud</p>
         </div>
@@ -226,7 +226,7 @@
 
             {% if result %}
             <div class="alert {{ 'alert-success' if result.ok else 'alert-error' }}">
-                <span>{{ '&#10004;' if result.ok else '&#10060;' }}</span>
+                <span aria-label="{{ 'Éxito' if result.ok else 'Error' }}">{{ '&#10004;' if result.ok else '&#10060;' }}</span>
                 <span>{{ result.msg }}</span>
             </div>
             {% endif %}
