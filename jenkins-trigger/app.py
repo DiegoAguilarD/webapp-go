@@ -41,7 +41,7 @@ def trigger():
         else:
             result = {
                 "ok": False,
-                "msg": f"Error {resp.status_code}: {resp.text[:200]}",
+                "msg": f"Jenkins respondió con código {resp.status_code}.",
             }
     except requests.RequestException as exc:
         result = {"ok": False, "msg": f"No se pudo conectar a Jenkins: {exc}"}
@@ -50,4 +50,4 @@ def trigger():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5050)
+    app.run(debug=False, port=5050)
