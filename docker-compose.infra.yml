@@ -1,0 +1,35 @@
+# Infraestructura base compartida para despliegue multi-tenant SaaS
+# Este archivo define la red Docker y el contenedor MariaDB compartido
+# por todos los clientes de la plataforma.
+#
+# Uso:
+#   docker-compose -f docker-compose.infra.yml up -d
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: saas_mariadb
+    restart: unless-stopped
+    environment:
+      # IMPORTANTE: Cambiar esta contraseña antes de usar en producción.
+      # Para entornos locales/desarrollo se usa el valor por defecto.
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - saas-network
+
+volumes:
+  mariadb_data:
+
+networks:
+  saas-network:
+    name: saas-network
+    driver: bridge
