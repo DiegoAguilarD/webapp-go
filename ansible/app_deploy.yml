@@ -1,6 +1,7 @@
 ---
 # Playbook de Ansible para desplegar un nuevo cliente en la plataforma SaaS
-# multi-tenant. Se ejecuta localmente y orquesta:
+# multi-tenant. Se ejecuta en la instancia de Google Cloud (34.46.129.60)
+# y orquesta:
 #   1. Construcción de la imagen Docker de la aplicación Go
 #   2. Creación de base de datos y usuario en el MariaDB compartido
 #   3. Despliegue del contenedor del cliente
@@ -9,13 +10,12 @@
 # Variables requeridas (pasadas desde Jenkins):
 #   - client_name:    Nombre descriptivo del cliente
 #   - client_slug:    Identificador único (letras minúsculas, números, guiones bajos)
-#   - admin_email:    Correo del administrador del cliente
-#   - admin_password: Contraseña del administrador del cliente
 #   - client_port:    Puerto externo asignado al contenedor
+#
+# El usuario administrador siempre es admin / 12345678
 
 - name: Desplegar nuevo cliente SaaS
-  hosts: 127.0.0.1
-  connection: local
+  hosts: gce
   gather_facts: false
 
   vars:
@@ -26,6 +26,8 @@
     db_name: "db_{{ client_slug }}"
     db_user: "user_{{ client_slug }}"
     container_name: "saas_client_{{ client_slug }}"
+    admin_email: "admin"
+    admin_password: "12345678"
 
   tasks:
     # ------------------------------------------------------------------
@@ -135,5 +137,5 @@
           Contenedor:  {{ container_name }}
           Puerto:      {{ client_port }}
           Base de datos: {{ db_name }}
-          URL:         http://127.0.0.1:{{ client_port }}
+          URL:         http://34.46.129.60:{{ client_port }}
           =========================================
