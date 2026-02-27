@@ -21,6 +21,12 @@ pipeline {
         stage('Validar parámetros') {
             steps {
                 script {
+                    echo "=== VALIDANDO PARÁMETROS ==="
+                    echo "CLIENT_NAME: '${params.CLIENT_NAME}'"
+                    echo "SLUG: '${params.SLUG}'"
+                    echo "ADMIN_EMAIL: '${params.ADMIN_EMAIL}'"
+                    echo "ADMIN_PASSWORD: ${params.ADMIN_PASSWORD ? '[PRESENTE]' : '[VACÍO]'}"
+                    
                     if (!params.CLIENT_NAME?.trim()) {
                         error('CLIENT_NAME es obligatorio.')
                     }
@@ -36,6 +42,8 @@ pipeline {
                     if (!params.ADMIN_PASSWORD?.trim()) {
                         error('ADMIN_PASSWORD es obligatorio.')
                     }
+                    
+                    echo "=== VALIDACIÓN EXITOSA ==="
                 }
             }
         }
