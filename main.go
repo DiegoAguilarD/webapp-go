@@ -84,11 +84,11 @@ func init() {
 	adminEmail := getEnv("ADMIN_EMAIL", "")
 	adminPassword := getEnv("ADMIN_PASSWORD", "")
 	clientSlug := getEnv("CLIENT_SLUG", "")
-	
+
 	if adminEmail != "" && adminPassword != "" {
 		// Generar token único para el admin
 		adminToken := generateUniqueToken()
-		
+
 		// Determinar la base de datos (usar CLIENT_SLUG si existe, sino usar email)
 		var dbName string
 		if clientSlug != "" {
@@ -98,14 +98,14 @@ func init() {
 			emailParts := strings.Split(adminEmail, "@")
 			dbName = "webapp_" + strings.ReplaceAll(emailParts[0], ".", "_")
 		}
-		
+
 		// Agregar usuario admin dinámico
 		userConfig[adminEmail] = map[string]string{
 			"password": adminPassword,
 			"dbname":   dbName,
 			"token":    adminToken,
 		}
-		
+
 		log.Printf("Usuario admin creado desde variables de entorno: %s (BD: %s)", adminEmail, dbName)
 	}
 
