@@ -20,9 +20,9 @@
 
   vars:
     docker_image: "webapp-go:latest"
-    docker_network: "saas-network"
-    mariadb_container: "saas_mariadb"
-    mariadb_root_password: "{{ lookup('env', 'MARIADB_ROOT_PASSWORD') | default('rootpassword', true) }}"
+    docker_network: "webapp-go_webapp-network"
+    mariadb_container: "webapp_mysql"
+    mariadb_root_password: "{{ lookup('env', 'MARIADB_ROOT_PASSWORD') | default('password', true) }}"
     db_name: "db_{{ client_slug }}"
     db_user: "user_{{ client_slug }}"
     container_name: "saas_client_{{ client_slug }}"
