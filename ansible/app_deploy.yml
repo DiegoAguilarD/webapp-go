@@ -31,6 +31,24 @@
 
   tasks:
     # ------------------------------------------------------------------
+    # 0. Clonar repositorio en GCP
+    # ------------------------------------------------------------------
+    - name: Crear directorio temporal para el código
+      ansible.builtin.file:
+        path: /tmp/webapp-go-build
+        state: directory
+        mode: '0755'
+      tags: [build]
+
+    - name: Clonar repositorio desde GitHub
+      ansible.builtin.git:
+        repo: https://github.com/DiegoAguilarD/webapp-go.git
+        dest: /tmp/webapp-go-build
+        force: yes
+        version: main
+      tags: [build]
+
+    # ------------------------------------------------------------------
     # 1. Construir la imagen Docker de la aplicación Go
     # ------------------------------------------------------------------
     - name: Construir imagen Docker de la aplicación
@@ -38,7 +56,7 @@
         name: "{{ docker_image }}"
         source: build
         build:
-          path: "{{ playbook_dir }}/.."
+          path: /tmp/webapp-go-build
           dockerfile: Dockerfile
         force_source: true
       tags: [build]
